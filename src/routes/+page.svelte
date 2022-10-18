@@ -51,8 +51,11 @@
   arrowIndex++;
 }}></svelte:window>
 
-<div>
+<div class="container">
   {#each arrows as arrow, i}
+    {#if i == arrowIndex}
+      <div class="cursor"></div>
+    {/if}
     {@const color = stateToColor[arrowState[i]] }
     <span class="{color}">{arrowToSymbol[arrow]}</span>
   {/each}
@@ -70,9 +73,25 @@
   .fail {
     color: red
   }
-  div {
+  .container {
     word-wrap: break-word;
   }
+
+  .cursor {
+    position: absolute;
+    display: inline-block;
+    height: 20px;
+    width: 2px;
+    animation: blink-animation 1s infinite;
+    background-color: orange;
+  }
+
+  @keyframes blink-animation {
+    0% { opacity: 1 }
+    50% { opacity: 0 }
+    100% { opacity: 1 }
+  }
+
   span {
     font-size: 2rem;
     padding: 0.5rem;
