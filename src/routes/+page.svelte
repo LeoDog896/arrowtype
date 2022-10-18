@@ -44,14 +44,26 @@
 
   let arrowIndex = 0
   let arrowState: TypeState[] = Array.from({ length: 20 }, () => TypeState.UNTYPED)
-  let arrows = randomArrows(20)
+  let arrows = randomArrows(200)
 </script>
 
 <svelte:window on:keydown={event => {
+  if (nameToArrow[event.key] === undefined) return
   arrowState[arrowIndex] = nameToArrow[event.key] == arrows[arrowIndex] ? 1 : 2
   arrowIndex++;
 }}></svelte:window>
 
-{#each arrows as arrow, i}
-  <span use:styles={{ color: stateToColor[arrowState[i]] }}>{arrowToSymbol[arrow]}</span>
-{/each}
+<div>
+  {#each arrows as arrow, i}
+    <span use:styles={{ color: stateToColor[arrowState[i]] }}>{arrowToSymbol[arrow]}</span>
+  {/each}
+</div>
+
+<style>
+  div {
+    word-wrap: break-word;
+  }
+  span {
+    font-size: 2rem;
+  }
+</style>
