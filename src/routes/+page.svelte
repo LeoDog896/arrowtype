@@ -29,9 +29,9 @@
   }
 
   const stateToColor: { [key in TypeState]: string } = {
-    0: "black",
-    1: "green",
-    2: "red"
+    0: "untyped",
+    1: "success",
+    2: "fail"
   }
   
   function randomInt(min: number, max: number) { // inclusive on min & max
@@ -43,7 +43,7 @@
   }
 
   let arrowIndex = 0
-  let arrowState: TypeState[] = Array.from({ length: 20 }, () => TypeState.UNTYPED)
+  let arrowState: TypeState[] = Array.from({ length: 200 }, () => TypeState.UNTYPED)
   let arrows = randomArrows(200)
 </script>
 
@@ -55,15 +55,28 @@
 
 <div>
   {#each arrows as arrow, i}
-    <span use:styles={{ color: stateToColor[arrowState[i]] }}>{arrowToSymbol[arrow]}</span>
+    {@const color = stateToColor[arrowState[i]] }
+    <span class="{color}">{arrowToSymbol[arrow]}</span>
   {/each}
 </div>
 
 <style>
+  .untyped {
+    color: darkgray
+  }
+
+  .success {
+    color: green
+  }
+
+  .fail {
+    color: red
+  }
   div {
     word-wrap: break-word;
   }
   span {
     font-size: 2rem;
+    padding: 0.5rem;
   }
 </style>
