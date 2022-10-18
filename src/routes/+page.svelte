@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { styles } from "svelte-styling"
-
   enum Arrow {
     LEFT = 0,
     UP = 1,
