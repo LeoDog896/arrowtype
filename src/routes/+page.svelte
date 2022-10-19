@@ -1,4 +1,42 @@
 <script lang="ts">
+	import { onMount } from "svelte";
+  import { styles } from "svelte-styling"
+  import { fade } from "svelte/transition"
+
+  let playing = true
+
+  /** synchronization between the player playing and the game playing */
+  let correct: boolean
+  let markTime = 0;
+
+  // bpm
+  const bpm = 80
+  $: metronome = 1000 / (bpm / 60);
+  let width = 0
+  $: {
+    if (cursor < arrows.length) {
+      let newWidth = ((currentTime - markTime) % metronome) / (metronome / 100)
+      if (newWidth < width && !correct) {
+        arrows[cursor] = {
+          ...arrows[cursor],
+          state: TypeState.FAIL
+        }
+        cursor++;
+      }
+      correct = false
+      width = newWidth
+    } else { 
+      playing = false
+    }
+  }
+
+  let currentTime: number;
+
+  onMount(() => {
+    currentTime = Date.now()
+    time()
+  })
+
   enum Arrow {
     LEFT = 0,
     UP = 1,
@@ -31,6 +69,11 @@
     1: "success",
     2: "fail"
   }
+
+  function time() {
+    currentTime = Date.now()
+    requestAnimationFrame(time)
+  }
   
   function randomInt(min: number, max: number) { // inclusive on min & max
     return Math.floor(Math.random() * (max - min + 1) + min)
@@ -54,8 +97,15 @@
     state: nameToArrow[event.key] == arrows[cursor].arrow ? TypeState.SUCCESS : TypeState.FAIL
   }
   cursor++;
+  correct = true
+  markTime = currentTime % metronome
 }}></svelte:window>
 
+{#if playing}
+  <div class="bar" out:fade use:styles={{ width: width + "%" }}></div>
+{:else}
+  <h1 class="score">Score</h1>
+{/if}
 <div class="container">
   {#each arrows as { arrow, state }, i}
     {@const color = stateToColor[state] }
@@ -69,7 +119,7 @@
   }
 
   .success {
-    color: black;
+    color: white;
     animation-name: success;
     animation-timing-function: ease-out;
     animation-duration: 4s;
@@ -81,6 +131,7 @@
   .container {
     word-wrap: break-word;
     margin: 4rem;
+    margin-top: 12rem;
   }
 
   .active {
@@ -89,18 +140,33 @@
   }
 
   @keyframes blink-animation {
-    0% { background-color: rgba(255, 166, 0, 0.464) }
+    0% { background-color: rgba(255, 166, 0, 0.564) }
     50% { background-color: rgba(255, 166, 0, 0.264) }
-    100% { background-color: rgba(255, 166, 0, 0.464) }
+    100% { background-color: rgba(255, 166, 0, 0.564) }
   }
 
   @keyframes success {
-    from { color: green; background-color: lightgreen; }
-    to { color: black; background-color: white; }
+    from { color: rgba(0, 128, 0, 0.438); background-color: rgba(144, 238, 144, 0.662); }
+    to { color: white; background-color: white; }
   }
 
   span {
     font-size: 2rem;
     padding: 0.5rem;
+  }
+
+  .bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4rem;
+    background-color: green;
+  }
+
+  .score {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 </style>
